@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YOLOv12 Object Detection</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:20px;background:#f5f5f5}
+    .container{max-width:900px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+    h1{text-align:center;color:#333;margin-bottom:30px}
+    .controls{margin-bottom:20px;padding:15px;background:#f8f9fa;border-radius:5px}
+    .file-input-wrapper{margin-bottom:15px}
+    input[type="file"]{width:100%;padding:8px;border:2px dashed #ddd;border-radius:4px;background:#fff}
+    button{background:#007bff;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;font-size:14px;margin-right:10px}
+    button:hover{background:#0056b3}
+    button:disabled{background:#ccc;cursor:not-allowed}
+    .progress-wrapper{margin:15px 0}
+    progress{width:100%;height:20px;border-radius:10px}
+    .status{margin:10px 0;padding:8px 12px;border-radius:4px;font-size:14px;min-height:20px}
+    .status.loading{background:#fff3cd;color:#856404;border:1px solid #ffeaa7}
+    .status.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+    .status.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+    .video-container{position:relative;display:flex;justify-content:center;margin:20px 0;background:#000;border-radius:8px;overflow:hidden}
+    #video-feed{max-width:100%;height:auto;display:block}
+    #detection-canvas{display:block;width:100%;height:auto}
+    .info-panel{background:#f8f9fa;padding:15px;border-radius:5px;margin-top:20px}
+    .detection-stats{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;margin-top:10px}
+    .hidden{display:none!important}
+
+    /* Current list styles */
+    .live-panel{background:#f8f9fa;padding:15px;border-radius:5px;margin-top:16px}
+    .live-title{margin:0 0 8px 0;color:#333;font-size:16px}
+    .det-list{list-style:none;margin:0;padding:0;border:1px solid #eee;border-radius:6px;background:#fff;max-height:280px;overflow:auto}
+    .det-list li{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid #f2f2f2;font-size:13px}
+    .det-list li:last-child{border-bottom:none}
+    .det-left{display:flex;gap:10px;align-items:center}
+    .det-name{font-weight:600}
+    .det-score{opacity:.75}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>YOLOv12 Object Detection</h1>
+
+    <div class="controls">
+      <div class="file-input-wrapper">
+        <label for="upload-video">Select Video File:</label>
+        <input type="file" id="upload-video" accept="video/*">
+      </div>
+
+      <div class="progress-wrapper hidden" id="progress-wrapper">
+        <progress id="progress-bar" value="0" max="100"></progress>
+      </div>
+
+      <div class="status" id="upload-status">Ready to load video and model</div>
+
+      <button id="start-processing" class="hidden" disabled>▶ Start Detection</button>
+      <button id="pause-processing" class="hidden">⏸ Pause</button>
+      <button id="stop-processing" class="hidden">⏹ Stop</button>
+    </div>
+
+    <div class="video-container hidden" id="video-container">
+      <video id="video-feed" controls muted></video>
+      <canvas id="detection-canvas"></canvas>
+    </div>
+
+    <div class="info-panel hidden" id="info-panel">
+      <div class="detection-stats">
+        <span>FPS: <span id="fps-counter">0</span></span>
+        <span>Detections: <span id="detection-counter">0</span></span>
+        <span>Processing Time: <span id="process-time">0ms</span></span>
+      </div>
+    </div>
+
+    <!-- Current detections (real-time list) -->
+    <div class="live-panel hidden" id="live-panel">
+      <p class="live-title">Current detections</p>
+      <ul id="current-list" class="det-list"></ul>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
